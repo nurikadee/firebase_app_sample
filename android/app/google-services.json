@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "47857730961",
+    "project_id": "fir-app-sample-24a04",
+    "storage_bucket": "fir-app-sample-24a04.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:47857730961:android:08a970eb0568a5d78a8630",
+        "android_client_info": {
+          "package_name": "com.nurika.firebaseapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "47857730961-glo0bh92963l22q9lkrh4vlkspoqarnq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAovCkP1xXj_zS8zSApgzvN2mTwuaox1-I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "47857730961-glo0bh92963l22q9lkrh4vlkspoqarnq.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "47857730961-3olf2ab8mt0u4295dfbht374qa1p2it4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.firebaseAppSample"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

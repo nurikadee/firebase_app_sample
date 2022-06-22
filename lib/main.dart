@@ -1,6 +1,5 @@
-import 'dart:developer';
-
 import 'package:firebase_app_sample/pages/home.dart';
+import 'package:firebase_app_sample/pages/inbox.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +12,9 @@ FirebaseMessaging messaging = FirebaseMessaging.instance;
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  log('Handling a background message ${message.messageId}');
+
+  debugPrint('Message [firebaseMessagingBackgroundHandler]'
+      ' ${message.notification?.title}');
 }
 
 late AndroidNotificationChannel channel;
@@ -28,6 +29,10 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  FirebaseMessaging.instance
+      .getToken()
+      .then((token) => debugPrint('FCM Token : $token'));
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
@@ -69,6 +74,7 @@ class MainApp extends StatelessWidget {
       ),
       routes: {
         '/': (context) => const HomeScreen(),
+        '/message': (context) => const InboxScreen(),
       },
     );
   }

@@ -31,10 +31,10 @@
               "client_type": 3
             },
             {
-              "client_id": "47857730961-3olf2ab8mt0u4295dfbht374qa1p2it4.apps.googleusercontent.com",
+              "client_id": "47857730961-sdlocgul25qu2hlfhftjj3gqka1udbkr.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.firebaseAppSample"
+                "bundle_id": "com.nurika.firebaseapp"
               }
             }
           ]

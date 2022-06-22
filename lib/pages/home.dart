@@ -1,5 +1,4 @@
-import 'dart:developer';
-
+import 'package:firebase_app_sample/helper/messaging.helper.dart';
 import 'package:firebase_app_sample/main.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -14,29 +13,54 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  RemoteMessage? message;
-  RemoteNotification? notification;
+  String? messageStatus;
 
   @override
   void initState() {
     super.initState();
+    setupInteractedMessage();
+  }
+
+  Future<void> setupInteractedMessage() async {
     FirebaseMessaging.instance
         .getInitialMessage()
-        .then((RemoteMessage? remoteMessage) {
-      if (remoteMessage != null) {
+        .then((RemoteMessage? initialMessage) {
+      if (initialMessage != null) {
         setState(() {
-          message = remoteMessage;
+          if (initialMessage.notification != null) {
+            messageStatus = '[getInitialMessage]'
+                '\n${initialMessage.notification?.title}';
+          }
         });
+        _handleMessage(initialMessage);
       }
     });
-
-    FirebaseMessaging.instance
-        .getToken()
-        .then((token) => log('FCM Token : $token'));
 
     FirebaseMessaging.onMessage.listen((RemoteMessage remoteMessage) {
       RemoteNotification? notification = remoteMessage.notification;
       AndroidNotification? android = remoteMessage.notification?.android;
+
+      AndroidInitializationSettings androidInitSettings =
+          const AndroidInitializationSettings('mipmap/ic_launcher');
+      IOSInitializationSettings iosInitSettings =
+          const IOSInitializationSettings();
+      var platform = InitializationSettings(
+          android: androidInitSettings, iOS: iosInitSettings);
+
+      flutterLocalNotificationsPlugin.initialize(
+        platform,
+        onSelectNotification: (payload) async {
+          setState(() {
+            if (remoteMessage.notification != null) {
+              messageStatus = '[onMessage Click]'
+                  '\n${remoteMessage.notification?.title}';
+            }
+          });
+
+          _handleMessage(remoteMessage);
+        },
+      );
+
       if (notification != null && android != null && !kIsWeb) {
         flutterLocalNotificationsPlugin.show(
           notification.hashCode,
@@ -52,32 +76,22 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         );
       }
-
-      setState(() {
-        message = remoteMessage;
-        notification = remoteMessage.notification;
-      });
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage remoteMessage) {
-      log('A new onMessageOpenedApp event was published!');
+      debugPrint('onMessageOpenedApp');
       setState(() {
-        message = remoteMessage;
+        if (remoteMessage.notification != null) {
+          messageStatus = '[onMessageOpenedApp]'
+              '\n${remoteMessage.notification?.title}';
+        }
       });
+      _handleMessage(remoteMessage);
     });
   }
 
-  Widget row(String title, String? value) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 8, right: 8, top: 8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('$title: '),
-          Expanded(child: Text(value ?? 'N/A')),
-        ],
-      ),
-    );
+  void _handleMessage(RemoteMessage message) {
+    MessagingHelper.goToInboxScreen(context, message);
   }
 
   @override
@@ -86,64 +100,8 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('Firebase Cloud Messaging'),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(8),
-          child: Column(
-            children: [
-              row('Message ID', message?.messageId),
-              row('Sender ID', message?.senderId),
-              row('Category', message?.category),
-              row('Collapse Key', message?.collapseKey),
-              row('Content Available', message?.contentAvailable.toString()),
-              row('Data', message?.data.toString()),
-              row('From', message?.from),
-              row('Message ID', message?.messageId),
-              row('Sent Time', message?.sentTime?.toString()),
-              row('Thread ID', message?.threadId),
-              row('Time to Live (TTL)', message?.ttl?.toString()),
-              if (notification != null) ...[
-                Padding(
-                  padding: const EdgeInsets.only(top: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('Remote Notification',
-                          style: TextStyle(fontSize: 18)),
-                      row('Title', notification?.title),
-                      row('Body', notification?.body),
-                      if (notification?.android != null) ...[
-                        const SizedBox(height: 16),
-                        const Text('Android Properties',
-                            style: TextStyle(fontSize: 18)),
-                        row('Channel ID', notification?.android!.channelId),
-                        row('Click Action', notification?.android!.clickAction),
-                        row('Color', notification?.android!.color),
-                        row('Count', notification?.android!.count?.toString()),
-                        row('Image URL', notification?.android!.imageUrl),
-                        row('Link', notification?.android!.link),
-                        row('Priority',
-                            notification?.android!.priority.toString()),
-                        row('Small Icon', notification?.android!.smallIcon),
-                        row('Sound', notification?.android!.sound),
-                        row('Ticker', notification?.android!.ticker),
-                        row('Visibility',
-                            notification?.android!.visibility.toString()),
-                      ],
-                      if (notification?.apple != null) ...[
-                        const Text('Apple Properties',
-                            style: TextStyle(fontSize: 18)),
-                        row('Subtitle', notification?.apple!.subtitle),
-                        row('Badge', notification?.apple!.badge),
-                        row('Sound', notification?.apple!.sound?.name),
-                      ]
-                    ],
-                  ),
-                )
-              ]
-            ],
-          ),
-        ),
+      body: Center(
+        child: Text('Messaging Status : ${messageStatus ?? 'N/A'}'),
       ),
     );
   }

@@ -70,7 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
             android: AndroidNotificationDetails(
               channel.id,
               channel.name,
-              channel.description,
+              channelDescription: channel.description,
               icon: 'mipmap/ic_launcher',
             ),
           ),

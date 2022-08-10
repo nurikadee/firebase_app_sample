@@ -34,13 +34,17 @@ void main() async {
       .getToken()
       .then((token) => debugPrint('FCM Token : $token'));
 
+  FirebaseMessaging.instance.onTokenRefresh.listen((token) async {
+    debugPrint('FCM Token : $token');
+  });
+
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   if (!kIsWeb) {
     channel = const AndroidNotificationChannel(
       'high_importance_channel', // id
       'High Importance Notifications', // title
-      'This channel is used for important notifications.', // description
+      description: 'This channel is used for important notifications.',
       importance: Importance.high,
     );
 

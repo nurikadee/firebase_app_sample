@@ -34,6 +34,10 @@ void main() async {
       .getToken()
       .then((token) => debugPrint('FCM Token : $token'));
 
+  FirebaseMessaging.instance.onTokenRefresh.listen((token) async {
+    debugPrint('FCM Token : $token');
+  });
+
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   if (!kIsWeb) {
